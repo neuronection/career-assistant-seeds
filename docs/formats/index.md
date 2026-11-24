@@ -11,6 +11,7 @@ A **format** is the wire shape of one item file. The app registers an adapter pe
 | `roadmap_graph` | 1 | topic/skill graph | roadmap adapter | Plan 223 |
 | `roadmap_content` | 1 | topic Markdown keyed by node | roadmap content adapter | Plan 223 |
 | `external_reference` | 1 | link + attribution, no content | reference card | Plan 223 |
+| `posting_snapshot` | 1 | one-shot job listings | snapshot importer (same posting identity) | future |
 
 Adding a format is additive: a new `items/<format>/` directory and a new `format_version`. The repository layout does not change. A breaking change to an existing format bumps `format_version`; the app refuses to apply an unknown version but keeps the bytes.
 

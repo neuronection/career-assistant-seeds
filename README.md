@@ -32,6 +32,7 @@ The normative contract is [`docs/repo-contract.md`](docs/repo-contract.md). In s
 - `packs/<publisher>/<pack>/items/<format>/…` — item envelopes (`format` + `format_version`).
 - `scripts/validate.mjs` — repo-level validation (no network).
 - `docs/formats/` — per-format schemas and license rules.
+- [`docs/identity-and-dedupe.md`](docs/identity-and-dedupe.md) — identity keys and the "add missing" diff.
 
 The layout is versioned on three axes — repo `schemaVersion`, pack `schema_version`, item `format_version` — so new formats are additive and do not require a breaking change. Packs may mix ATS connectors; items may carry a primary `country` plus a `countries` lens set, optional `regions`, `languages`, `work_modes` and `homepage`; a `worldwide` remote item has no country.
 
@@ -43,6 +44,7 @@ The layout is versioned on three axes — repo `schemaVersion`, pack `schema_ver
 | `endpoint_descriptors` | v1 — both packs |
 | `job_types`, `companies` | planned — Plan 219 |
 | `roadmap_graph`, `roadmap_content`, `external_reference` | planned — Plan 223 |
+| `posting_snapshot` | planned — future; same posting identity as live sync |
 
 ## Licensing
 
