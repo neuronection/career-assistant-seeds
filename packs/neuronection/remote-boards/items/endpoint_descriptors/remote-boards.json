@@ -40,12 +40,7 @@
           "type": "number"
         },
         {
-          "name": "geo",
-          "required": false,
-          "type": "string"
-        },
-        {
-          "name": "industry",
+          "name": "tag",
           "required": false,
           "type": "string"
         }

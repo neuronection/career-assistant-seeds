@@ -9,7 +9,7 @@ The **packs** are data only. The repository also carries the validator, CI and d
 | Pack | Version | Coverage | Formats | License | Vintage | Items |
 |---|---|---|---|---|---|---|
 | `neuronection-greece-ats` | 1.2.0 | Greece (`GR`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-23 | 17 tenants + 8 endpoint descriptors |
-| `neuronection-remote-boards` | 1.0.0 | Worldwide (`WW`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-24 | 3 remote boards + 3 endpoint descriptors |
+| `neuronection-remote-boards` | 1.0.1 | Worldwide (`WW`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-24 | 3 remote boards + 3 endpoint descriptors |
 
 The pack lives at `packs/neuronection/greece-ats/`; the root index is `seed-repo.json`.
 
