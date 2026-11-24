@@ -49,7 +49,9 @@ Pack data is CC-BY-4.0. The allowed licenses and the “personal use only” exc
 
 ## Contributing
 
-A new pack or a data correction is a pull request; CI validates the index, manifests, envelopes, digests, connector keys, license, caps and forbidden files. Releases are immutable tags. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`GOVERNANCE.md`](GOVERNANCE.md).
+A new pack or a data correction is a pull request; CI validates the index, manifests, envelopes, digests, connector keys, license, caps and forbidden files. Releases are immutable tags. See [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md) and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
+
+Report security issues privately via [`SECURITY.md`](SECURITY.md) — never in a public issue.
 
 ## Validate
 
