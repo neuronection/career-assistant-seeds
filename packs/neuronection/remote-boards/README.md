@@ -2,7 +2,7 @@
 
 - Publisher: `neuronection`
 - Pack: `neuronection-remote-boards`
-- Version: `1.0.0`
+- Version: `1.0.1`
 - License: `CC-BY-4.0`
 - Data vintage: `2026-11-24`
 - Formats: `ats_presets` v1 and `endpoint_descriptors` v1
