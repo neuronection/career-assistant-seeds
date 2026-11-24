@@ -1,7 +1,7 @@
-# Career Seed Repository Contract — v1
+# Career Assistant Seed Repository Contract — v1
 
 **Status:** draft, stable-by-design (2026-11-24)
-**Applies to:** `neuronection/career-seeds` and any third-party seed repository that a Career Assistant instance can add.
+**Applies to:** `neuronection/career-assistant-seeds` and any third-party seed repository that a Career Assistant instance can add.
 **Normative words:** MUST / MUST NOT / SHOULD per RFC 2119.
 
 This document is the contract for a **seed repository**: a git repository (or an HTTPS mirror serving the same tree) that publishes versioned, digest-pinned seed packs for Career Assistant. The app treats every repository as **untrusted data**: it parses, validates, stores bytes by digest, and requires an admin to approve the exact digest before apply. No code from a repository is ever executed.
@@ -234,7 +234,7 @@ A non-git provider (e.g., a future neuronection.com API) serves the same `seed-r
 
 ## 9. Creating a repository
 
-1. Use `templates/seed-repo` (or the `career-seeds-template` repository) as the starting point.
+1. Use `templates/seed-repo` (or the `career-assistant-seeds-template` repository) as the starting point.
 2. Set `publisher.id`/`name` in `seed-repo.json`; keep the directory `packs/<publisher>/`.
 3. Copy an existing pack under `packs/` to `packs/<publisher>/<pack>/` and rename it; edit `manifest.json` and `items/<format>/…`.
 4. Run `node scripts/validate.mjs`.
