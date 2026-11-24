@@ -1,0 +1,20 @@
+{
+  "id": "neuronection-remote-boards",
+  "schema_version": "1.0",
+  "version": "1.0.0",
+  "license": "CC-BY-4.0",
+  "scope": "system",
+  "priority": 100,
+  "min_app_version": "0.21.0",
+  "description": "Worldwide remote job boards: Arbeitnow, Jobicy and Remotive, with public endpoint descriptors.",
+  "item_files": [
+    {
+      "path": "items/ats_presets/remote-boards.json",
+      "sha256": "1e418d537446f44ece46b12aef73479105939239ee5580bf20f9d6d85faa9289"
+    },
+    {
+      "path": "items/endpoint_descriptors/remote-boards.json",
+      "sha256": "3e768f85489224199ff90ade9dfe5db988058dfd9d7cc6bdce2381b3b82f8367"
+    }
+  ]
+}

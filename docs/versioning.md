@@ -40,3 +40,7 @@ These do not require a breaking change:
 - a new pack under `packs/<publisher>/`.
 
 Only a change to the root index fields or the pack envelope itself justifies a `schemaVersion` / `schema_version` bump.
+
+## v1 additive fields (2026-11-25)
+
+`ats_presets` v1 added optional `countries`, `regions`, `worldwide`, `languages`, `work_modes` and `homepage`; `endpoint_descriptors` v1 added optional `regions`, `worldwide` and `languages`. These are optional and additive, so **`format_version` stays 1**. No app release consumed the seed lane when they were added; the repository tag is the release. A future change to an existing field's meaning or a removed field is a breaking change and bumps `format_version`.

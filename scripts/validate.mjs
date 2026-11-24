@@ -20,6 +20,10 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const SEMVER = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
 const SHA256 = /^[0-9a-f]{64}$/;
 const PACK_DIGEST = /^sha256:[0-9a-f]{64}$/;
+const COUNTRY = /^[A-Z]{2}$/;
+const REGION = /^[A-Z][A-Z0-9_-]{1,31}$/;
+const LANGUAGE = /^[a-z]{2}$/;
+const WORK_MODES = new Set(["remote", "hybrid", "onsite"]);
 const LICENSES = new Set(["Apache-2.0", "CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0", "MIT"]);
 const FORMATS = new Set([
   "ats_presets",
@@ -36,6 +40,154 @@ const readText = (path) => readFileSync(join(ROOT, path), "utf8");
 const readBytes = (path) => readFileSync(join(ROOT, path));
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+
+function checkStringArray(value, pattern, max, label, { min = 1, allowed = null } = {}) {
+  if (!Array.isArray(value)) {
+    fail(`${label} must be an array`);
+    return false;
+  }
+  if (value.length < min || value.length > max) {
+    fail(`${label} must contain ${min}..${max} entries`);
+    return false;
+  }
+  const seen = new Set();
+  let ok = true;
+  for (const entry of value) {
+    if (
+      typeof entry !== "string" ||
+      (pattern && !pattern.test(entry)) ||
+      (allowed && !allowed.has(entry))
+    ) {
+      fail(`${label} has an invalid entry`);
+      ok = false;
+      continue;
+    }
+    if (seen.has(entry)) {
+      fail(`${label} has a duplicate entry`);
+      ok = false;
+    }
+    seen.add(entry);
+  }
+  return ok;
+}
+
+function checkLocale(item, label, { requireCountry = false } = {}) {
+  let ok = true;
+  if (item.country !== undefined && (typeof item.country !== "string" || !COUNTRY.test(item.country))) {
+    fail(`${label}.country must be a two-letter uppercase ISO code`);
+    ok = false;
+  }
+  if (item.countries !== undefined) {
+    ok = checkStringArray(item.countries, COUNTRY, 50, `${label}.countries`) && ok;
+    if (item.country && Array.isArray(item.countries) && !item.countries.includes(item.country)) {
+      fail(`${label}.countries must include .country`);
+      ok = false;
+    }
+  }
+  if (item.regions !== undefined) {
+    ok = checkStringArray(item.regions, REGION, 10, `${label}.regions`) && ok;
+  }
+  if (item.languages !== undefined) {
+    ok = checkStringArray(item.languages, LANGUAGE, 20, `${label}.languages`) && ok;
+  }
+  if (item.work_modes !== undefined) {
+    ok = checkStringArray(item.work_modes, null, 3, `${label}.work_modes`, { allowed: WORK_MODES }) && ok;
+  }
+  if (item.homepage !== undefined) {
+    if (
+      typeof item.homepage !== "string" ||
+      !item.homepage.startsWith("https://") ||
+      item.homepage.length > 500
+    ) {
+      fail(`${label}.homepage must be an https URL (<= 500 chars)`);
+      ok = false;
+    }
+  }
+  if (item.worldwide !== undefined) {
+    if (typeof item.worldwide !== "boolean") {
+      fail(`${label}.worldwide must be a boolean`);
+      ok = false;
+    } else if (item.worldwide) {
+      if ((item.countries ?? []).length > 0 || (item.regions ?? []).length > 0) {
+        fail(`${label}: worldwide requires no countries/regions`);
+        ok = false;
+      }
+      if (item.category !== undefined && item.category !== "remote") {
+        fail(`${label}: worldwide is only valid with category "remote"`);
+        ok = false;
+      }
+    }
+  }
+  if (requireCountry && !item.country && (item.countries ?? []).length === 0) {
+    fail(`${label}: category "ats" requires country or countries`);
+    ok = false;
+  }
+  return ok;
+}
+
+function checkAtsPreset(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "")) fail(`${label}.seed_key is invalid`);
+  if (!KEBAB.test(item.slug || "")) fail(`${label}.slug is invalid`);
+  if (typeof item.name !== "string" || item.name.length < 1 || item.name.length > 200) {
+    fail(`${label}.name is invalid`);
+  }
+  if (typeof item.connector_key !== "string" || item.connector_key.length === 0) {
+    fail(`${label}.connector_key is required`);
+  }
+  if (typeof item.platform !== "string" || item.platform.length === 0) {
+    fail(`${label}.platform is required`);
+  }
+  if (item.category !== "ats" && item.category !== "remote") {
+    fail(`${label}.category must be ats or remote`);
+  }
+  if (!isObject(item.config)) fail(`${label}.config must be an object`);
+  checkLocale(item, label, { requireCountry: item.category === "ats" });
+}
+
+function checkEndpoint(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "") || !item.seed_key.startsWith("endpoint:")) {
+    fail(`${label}.seed_key must be endpoint:<body>`);
+  }
+  if (typeof item.label !== "string" || item.label.length < 1 || item.label.length > 120) {
+    fail(`${label}.label is invalid`);
+  }
+  if (typeof item.connector_key !== "string" || item.connector_key.length === 0) {
+    fail(`${label}.connector_key is required`);
+  }
+  if (typeof item.server !== "string" || !item.server.startsWith("https://")) {
+    fail(`${label}.server must be https`);
+  }
+  if (item.method !== "GET") fail(`${label}.method must be GET`);
+  if (typeof item.path !== "string" || !item.path.startsWith("/")) {
+    fail(`${label}.path must start with /`);
+  }
+  if (!["none", "api_key", "bearer", "oauth"].includes(item.auth)) {
+    fail(`${label}.auth is invalid`);
+  }
+  if (item.params !== undefined) {
+    if (!Array.isArray(item.params) || item.params.length > 20) {
+      fail(`${label}.params must be an array of at most 20`);
+    } else {
+      for (const param of item.params) {
+        if (!isObject(param) || typeof param.name !== "string" || param.name.length === 0) {
+          fail(`${label}.params has an invalid entry`);
+        }
+      }
+    }
+  }
+  if (item.docs_url !== undefined && (typeof item.docs_url !== "string" || !item.docs_url.startsWith("https://"))) {
+    fail(`${label}.docs_url must be https`);
+  }
+  checkLocale(item, label);
+}
 
 function readJson(path) {
   try {
@@ -210,14 +362,10 @@ for (const pack of index?.packs ?? []) {
     itemTypes.add(meta.item_type);
 
     if (meta.format === "ats_presets") {
-      for (const item of envelope.items) {
-        if (!isObject(item) || !SEED_KEY.test(item.seed_key || "")) {
-          fail(`${itemLabel}: ats_presets item has an invalid seed_key`);
-        }
-        if (!isObject(item) || !KEBAB.test(item.slug || "")) {
-          fail(`${itemLabel}: ats_presets item has an invalid slug`);
-        }
-      }
+      envelope.items.forEach((item, index) => checkAtsPreset(item, `${itemLabel} item ${index}`));
+    }
+    if (meta.format === "endpoint_descriptors") {
+      envelope.items.forEach((item, index) => checkEndpoint(item, `${itemLabel} item ${index}`));
     }
   }
 
