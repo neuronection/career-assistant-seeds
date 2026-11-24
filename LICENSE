@@ -1,0 +1,7 @@
+Copyright 2026 Neuronection.
+
+The documentation and tooling in this repository are licensed under the Apache License, Version 2.0:
+
+https://www.apache.org/licenses/LICENSE-2.0
+
+Pack data is licensed separately under `LICENSE-DATA` (CC-BY-4.0), and each pack's `manifest.json` `license` field is authoritative.
