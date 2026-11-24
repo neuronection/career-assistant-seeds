@@ -44,7 +44,12 @@ One item = one public endpoint hint (server, method/path, auth type, docs). It p
 | `auth` | yes | `none`, `api_key`, `bearer`, `oauth` — a descriptor, never a value |
 | `params` | no | `{name, required, type?}`; bounded |
 | `docs_url` | no | https only |
-| `countries` | no | ISO alpha-2 |
+| `countries` | no | ISO alpha-2 list, unique, max 50; the country lens hint |
+| `regions` | no | uppercase region codes, unique, max 10 (`EU`, `DACH`, …) |
+| `worldwide` | no | boolean; true for a global endpoint; requires no `countries`/`regions` |
+| `languages` | no | ISO 639-1, unique, max 20 |
+
+A worldwide endpoint sets `worldwide: true` and omits `countries`/`regions`; a regional endpoint uses `countries` and/or `regions`.
 
 ## Caps
 

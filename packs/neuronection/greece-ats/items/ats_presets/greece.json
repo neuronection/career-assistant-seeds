@@ -19,12 +19,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 32,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "affideagreece"
-      },
-      "country": "GR",
-      "openings": 32,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:angelicoussisgroup",
@@ -33,12 +36,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 7,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "angelicoussisgroup"
-      },
-      "country": "GR",
-      "openings": 7,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:ballysintralotsa",
@@ -47,12 +53,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 42,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "ballysintralotsa"
-      },
-      "country": "GR",
-      "openings": 42,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:bettercollective",
@@ -61,12 +70,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 7,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "bettercollective"
-      },
-      "country": "GR",
-      "openings": 7,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:epignosis",
@@ -75,12 +87,15 @@
       "connector_key": "workable",
       "platform": "Workable",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 19,
+      "verified_at": "2026-11-23",
       "config": {
         "account": "epignosis"
-      },
-      "country": "GR",
-      "openings": 19,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:hack-the-box-ltd",
@@ -89,12 +104,15 @@
       "connector_key": "workable",
       "platform": "Workable",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 38,
+      "verified_at": "2026-11-23",
       "config": {
         "account": "hack-the-box-ltd"
-      },
-      "country": "GR",
-      "openings": 38,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:huaweidusseldorf-1719303222",
@@ -103,12 +121,15 @@
       "connector_key": "teamtailor",
       "platform": "Teamtailor",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 202,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "huaweidusseldorf-1719303222"
-      },
-      "country": "GR",
-      "openings": 202,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:keyes",
@@ -117,12 +138,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 32,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "keyes"
-      },
-      "country": "GR",
-      "openings": 32,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:opencosmos-1706113956",
@@ -131,12 +155,15 @@
       "connector_key": "teamtailor",
       "platform": "Teamtailor",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 58,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "opencosmos-1706113956"
-      },
-      "country": "GR",
-      "openings": 58,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:orbia-orbia-connectivity-solutions-dura-line",
@@ -145,12 +172,15 @@
       "connector_key": "teamtailor",
       "platform": "Teamtailor",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 61,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "orbia-orbia-connectivity-solutions-dura-line"
-      },
-      "country": "GR",
-      "openings": 61,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:petcitygroup",
@@ -159,12 +189,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 43,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "petcitygroup"
-      },
-      "country": "GR",
-      "openings": 43,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:skroutz",
@@ -173,12 +206,15 @@
       "connector_key": "workable",
       "platform": "Workable",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 8,
+      "verified_at": "2026-11-23",
       "config": {
         "account": "skroutz"
-      },
-      "country": "GR",
-      "openings": 8,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:spotawheel",
@@ -187,12 +223,15 @@
       "connector_key": "workable",
       "platform": "Workable",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 34,
+      "verified_at": "2026-11-23",
       "config": {
         "account": "spotawheel"
-      },
-      "country": "GR",
-      "openings": 34,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:tbibankgr",
@@ -201,12 +240,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 7,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "tbibankgr"
-      },
-      "country": "GR",
-      "openings": 7,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:teamblue",
@@ -215,12 +257,15 @@
       "connector_key": "teamtailor",
       "platform": "Teamtailor",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 91,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "teamblue"
-      },
-      "country": "GR",
-      "openings": 91,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:technomar",
@@ -229,12 +274,15 @@
       "connector_key": "recruitee",
       "platform": "Recruitee",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 6,
+      "verified_at": "2026-11-23",
       "config": {
         "company": "technomar"
-      },
-      "country": "GR",
-      "openings": 6,
-      "verified_at": "2026-11-23"
+      }
     },
     {
       "seed_key": "ats-preset:withplum",
@@ -243,12 +291,15 @@
       "connector_key": "workable",
       "platform": "Workable",
       "category": "ats",
+      "country": "GR",
+      "countries": [
+        "GR"
+      ],
+      "openings": 30,
+      "verified_at": "2026-11-23",
       "config": {
         "account": "withplum"
-      },
-      "country": "GR",
-      "openings": 30,
-      "verified_at": "2026-11-23"
+      }
     }
   ]
 }

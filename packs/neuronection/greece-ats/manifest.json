@@ -1,7 +1,7 @@
 {
   "id": "neuronection-greece-ats",
   "schema_version": "1.0",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "license": "CC-BY-4.0",
   "scope": "system",
   "priority": 100,
@@ -10,7 +10,7 @@
   "item_files": [
     {
       "path": "items/ats_presets/greece.json",
-      "sha256": "5720f4a4c26296282c921d7aa9cb6e45f31f352df5cd8f2702b4db9bbe6bab04"
+      "sha256": "5a69f28a165d86b72e1fd4cde5da7a0bc35971a2b49a2fd2c02acd8c810c7fe3"
     },
     {
       "path": "items/endpoint_descriptors/providers.json",

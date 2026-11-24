@@ -250,6 +250,7 @@ The layout is designed so these future additions do **not** require a breaking c
 - new transports (non-git registry, private/paid) → same root index; transport is app-side;
 - new optional metadata → `x-*` keys;
 - new pack versions → new tag + version + digest; old tags remain immutable;
-- signatures → `signature` object replaces `null` without moving the layout.
+- signatures → `signature` object replaces `null` without moving the layout;
+- new optional item fields in v1 → e.g. `countries`, `regions`, `worldwide`, `languages`, `work_modes`, `homepage`; additive while no app release consumes the lane, otherwise a `format_version` bump.
 
 A breaking change is only justified if the root index or pack envelope itself changes shape; then `schemaVersion` / `schema_version` bumps and older apps refuse the repository with a clear message.

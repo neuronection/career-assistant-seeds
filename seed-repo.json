@@ -17,8 +17,21 @@
         "endpoint_descriptors"
       ],
       "license": "CC-BY-4.0",
-      "version": "1.1.0",
-      "digest": "sha256:6af68317ce269ffa338f3d63a424c043e488251017fce61154e1f72607acbb12",
+      "version": "1.2.0",
+      "digest": "sha256:a54b18393ede024edf63391edf3725a80d9fbc09546b7a6d03c8947988156638",
+      "signature": null
+    },
+    {
+      "id": "neuronection-remote-boards",
+      "path": "packs/neuronection/remote-boards",
+      "manifest": "packs/neuronection/remote-boards/manifest.json",
+      "itemTypes": [
+        "ats_presets",
+        "endpoint_descriptors"
+      ],
+      "license": "CC-BY-4.0",
+      "version": "1.0.0",
+      "digest": "sha256:4c17fb6e0d8aa2f9afdf558b2d6ced0fc6ee1a27b75de23869348981f5f45007",
       "signature": null
     }
   ]

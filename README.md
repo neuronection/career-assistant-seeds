@@ -6,9 +6,10 @@ The **packs** are data only. The repository also carries the validator, CI and d
 
 ## Packs
 
-| Pack | Version | Formats | License | Vintage | Items |
-|---|---|---|---|---|---|
-| `neuronection-greece-ats` | 1.1.0 | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-23 | 17 tenants + 8 endpoint descriptors |
+| Pack | Version | Coverage | Formats | License | Vintage | Items |
+|---|---|---|---|---|---|---|
+| `neuronection-greece-ats` | 1.2.0 | Greece (`GR`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-23 | 17 tenants + 8 endpoint descriptors |
+| `neuronection-remote-boards` | 1.0.0 | Worldwide (`WW`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-24 | 3 remote boards + 3 endpoint descriptors |
 
 The pack lives at `packs/neuronection/greece-ats/`; the root index is `seed-repo.json`.
 
@@ -17,7 +18,7 @@ The pack lives at `packs/neuronection/greece-ats/`; the root index is `seed-repo
 1. **Settings → Tools → Sources → Add provider → Git repository**.
 2. Repository URL: this repository.
 3. Ref: a release tag (not `main`).
-4. Subpath: `packs/neuronection/greece-ats` (or use the index to pick the pack).
+4. Subpath: `packs/neuronection/greece-ats` or `packs/neuronection/remote-boards` (or use the index to pick a pack).
 5. Review the pending version diff and **approve the exact digest**.
 
 The official provider tile may also be boot-provisioned by the app; the repository is the source of truth, and the website is a legacy mirror.
@@ -32,14 +33,14 @@ The normative contract is [`docs/repo-contract.md`](docs/repo-contract.md). In s
 - `scripts/validate.mjs` — repo-level validation (no network).
 - `docs/formats/` — per-format schemas and license rules.
 
-The layout is versioned on three axes — repo `schemaVersion`, pack `schema_version`, item `format_version` — so new formats are additive and do not require a breaking change.
+The layout is versioned on three axes — repo `schemaVersion`, pack `schema_version`, item `format_version` — so new formats are additive and do not require a breaking change. Packs may mix ATS connectors; items may carry a primary `country` plus a `countries` lens set, optional `regions`, `languages`, `work_modes` and `homepage`; a `worldwide` remote item has no country.
 
 ## Formats
 
 | Format | Status |
 |---|---|
-| `ats_presets` | v1 — this pack |
-| `endpoint_descriptors` | v1 — Plan 218 |
+| `ats_presets` | v1 — both packs |
+| `endpoint_descriptors` | v1 — both packs |
 | `job_types`, `companies` | planned — Plan 219 |
 | `roadmap_graph`, `roadmap_content`, `external_reference` | planned — Plan 223 |
 
