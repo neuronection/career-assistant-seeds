@@ -1,4 +1,4 @@
-# Neuronection Career Seeds
+# Neuronection Career Assistant Seeds
 
 The **official seed repository** for Career Assistant: versioned, digest-pinned packs of ATS sources, endpoint descriptors, and later job types, companies and roadmaps. A Career Assistant instance adds this repository by URL and pins a release tag; the app verifies the pack digest and an admin approves the exact digest before anything is applied.
 
