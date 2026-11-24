@@ -50,6 +50,29 @@ One item = one employer tenant on a public ATS feed. The app offers it as a one-
 
 ≤ 300 items per file; `config` ≤ 20 entries; each value a string.
 
+## Multiple ATS, countries and remote
+
+- A pack may mix connectors (`recruitee`, `teamtailor`, `workable`, `personio`, `join_com`, `ats_api`, `jobicy`, …); `connector_key` is per item.
+- `country` is the item's **primary market** (ISO 3166-1 alpha-2). A pack may contain items for several countries; the gallery's country lens groups them.
+- **Remote / worldwide:** set `category: "remote"` and omit `country`. The app groups it under **Worldwide** (`WW`), not a country.
+
+```json
+{
+  "seed_key": "ats-preset:jobicy",
+  "slug": "jobicy",
+  "name": "Jobicy",
+  "connector_key": "jobicy",
+  "platform": "Jobicy",
+  "category": "remote",
+  "config": {}
+}
+```
+
+- **Multi-country employer:** v1 has one `country` per item. When the gallery must show the same employer under more than one country lens, emit one item per country with a distinct `seed_key`/`slug` (`acme-gr`, `acme-de`). A `countries: string[]` field would be an additive `format_version` 2 change (app adapter + schema), **not** a repository layout change.
+- **Regions:** there is no `region` field in v1. A DACH pack simply contains DE/AT/CH items; the country lens filters them. A pack can also be worldwide-only (remote).
+- **Scoping:** one pack per coverage scope/tier keeps versioning independent, e.g. `packs/neuronection/greece-ats`, `packs/neuronection/dach-ats`, `packs/neuronection/remote-boards`. The root `seed-repo.json` lists all packs; the app can add one pack or discover all.
+- **Priority is per pack:** keep official/operator (`100`), community (`150`) and local/user (`180`) in separate packs rather than mixing tiers in one pack.
+
 ## License and identity
 
 - The pack license must allow redistribution of the tenant/config facts.
