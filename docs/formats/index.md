@@ -6,7 +6,12 @@ A **format** is the wire shape of one item file. The app registers an adapter pe
 |---|---|---|---|---|
 | `ats_presets` | 1 | employer tenants on public ATS feeds | gallery / source creation | Plan 218 |
 | `endpoint_descriptors` | 1 | public API endpoint hints | endpoint explorer / wizard prefill | Plan 218 |
-| `job_types` | 1 | occupation archetypes | catalog proposal queue | Plan 219 |
+| `job_families` | 1 | job-family tree nodes | catalog adapter (trusted pack) | Plan 224 |
+| `job_types` | 2 | curated occupation rows | catalog adapter (trusted pack) | Plan 224 |
+| `job_relations` | 1 | typed job-to-job edges | catalog adapter (trusted pack) | Plan 224 |
+| `career_paths` | 1 | curated starter paths | catalog adapter (trusted pack) | Plan 224 |
+| `skills` | 1 | skill ontology nodes | catalog adapter (trusted pack) | Plan 224 |
+| `interest_tags` | 1 | interest vocabulary | catalog adapter (trusted pack) | Plan 224 |
 | `companies` | 1 | company names/aliases/domains | organization alias proposals | Plan 219 |
 | `roadmap_graph` | 1 | topic/skill graph | roadmap adapter | Plan 223 |
 | `roadmap_content` | 1 | topic Markdown keyed by node | roadmap content adapter | Plan 223 |

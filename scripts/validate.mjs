@@ -29,11 +29,26 @@ const FORMATS = new Set([
   "ats_presets",
   "endpoint_descriptors",
   "job_types",
+  "job_families",
+  "job_relations",
+  "career_paths",
+  "skills",
+  "interest_tags",
   "companies",
   "roadmap_graph",
   "roadmap_content",
   "external_reference"
 ]);
+const RELATION_TYPES = new Set([
+  "similar_to",
+  "specialises_into",
+  "leads_to",
+  "alternative_to",
+  "prerequisite_of"
+]);
+const IMPORTANCE = new Set(["core", "important", "bonus"]);
+const STEP_KINDS = new Set(["education", "experience", "certification", "job"]);
+const INTEREST_KINDS = new Set(["topic", "industry"]);
 const ALLOWED_PACK_FILES = new Set(["manifest.json", "README.md", "LICENSE", "CHANGELOG.md"]);
 
 const readText = (path) => readFileSync(join(ROOT, path), "utf8");
@@ -146,6 +161,171 @@ function checkAtsPreset(item, label) {
   }
   if (!isObject(item.config)) fail(`${label}.config must be an object`);
   checkLocale(item, label, { requireCountry: item.category === "ats" });
+}
+
+function checkJobFamily(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "") || !item.seed_key.startsWith("job-family:")) {
+    fail(`${label}.seed_key must be job-family:<body>`);
+  }
+  if (!KEBAB.test(item.key || "")) fail(`${label}.key is invalid`);
+  if (typeof item.label !== "string" || item.label.length < 1 || item.label.length > 120) {
+    fail(`${label}.label is invalid`);
+  }
+  if (item.parent_key !== undefined && item.parent_key !== null && !KEBAB.test(item.parent_key)) {
+    fail(`${label}.parent_key is invalid`);
+  }
+  if (item.description !== undefined && typeof item.description !== "string") {
+    fail(`${label}.description must be a string`);
+  }
+}
+
+function checkJobType(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "") || !item.seed_key.startsWith("job-type:")) {
+    fail(`${label}.seed_key must be job-type:<body>`);
+  }
+  if (!KEBAB.test(item.code || "")) fail(`${label}.code is invalid`);
+  if (typeof item.title !== "string" || item.title.length < 1 || item.title.length > 160) {
+    fail(`${label}.title is invalid`);
+  }
+  if (!KEBAB.test(item.family_key || "")) fail(`${label}.family_key is invalid`);
+  if (item.summary !== undefined && typeof item.summary !== "string") {
+    fail(`${label}.summary must be a string`);
+  }
+  if (!isObject(item.attributes)) fail(`${label}.attributes must be an object`);
+  if (!Array.isArray(item.skills) || item.skills.length > 40) {
+    fail(`${label}.skills must be an array of at most 40`);
+  } else {
+    for (const [index, ref] of item.skills.entries()) {
+      const refLabel = `${label}.skills[${index}]`;
+      if (!isObject(ref) || !KEBAB.test(ref.skill_key || "")) {
+        fail(`${refLabel}.skill_key is invalid`);
+        continue;
+      }
+      if (ref.required_level !== undefined && (!Number.isInteger(ref.required_level) || ref.required_level < 1 || ref.required_level > 10)) {
+        fail(`${refLabel}.required_level must be 1..10`);
+      }
+      if (ref.importance !== undefined && !IMPORTANCE.has(ref.importance)) {
+        fail(`${refLabel}.importance is invalid`);
+      }
+    }
+  }
+  if (!Array.isArray(item.interests) || item.interests.length > 40) {
+    fail(`${label}.interests must be an array of at most 40`);
+  } else {
+    for (const key of item.interests) {
+      if (typeof key !== "string" || !KEBAB.test(key)) fail(`${label}.interests has an invalid key`);
+    }
+  }
+}
+
+function checkJobRelation(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "") || !item.seed_key.startsWith("job-relation:")) {
+    fail(`${label}.seed_key must be job-relation:<from>/<to>/<type>`);
+  }
+  if (!KEBAB.test(item.from || "")) fail(`${label}.from is invalid`);
+  if (!KEBAB.test(item.to || "")) fail(`${label}.to is invalid`);
+  if (!RELATION_TYPES.has(item.type)) fail(`${label}.type is invalid`);
+  if (typeof item.weight !== "number" || item.weight < 0 || item.weight > 1) {
+    fail(`${label}.weight must be 0..1`);
+  }
+  if (item.rationale !== undefined && typeof item.rationale !== "string") {
+    fail(`${label}.rationale must be a string`);
+  }
+}
+
+function checkCareerPath(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "") || !item.seed_key.startsWith("career-path:")) {
+    fail(`${label}.seed_key must be career-path:<job>/<slug>`);
+  }
+  if (!KEBAB.test(item.job || "")) fail(`${label}.job is invalid`);
+  if (typeof item.title !== "string" || item.title.length < 1 || item.title.length > 160) {
+    fail(`${label}.title is invalid`);
+  }
+  if (!Array.isArray(item.steps) || item.steps.length > 20) {
+    fail(`${label}.steps must be an array of at most 20`);
+    return;
+  }
+  for (const [index, step] of item.steps.entries()) {
+    const stepLabel = `${label}.steps[${index}]`;
+    if (!isObject(step) || !STEP_KINDS.has(step.kind)) {
+      fail(`${stepLabel}.kind is invalid`);
+      continue;
+    }
+    if (step.label !== undefined && typeof step.label !== "string") {
+      fail(`${stepLabel}.label must be a string`);
+    }
+    if (step.optional !== undefined && typeof step.optional !== "boolean") {
+      fail(`${stepLabel}.optional must be a boolean`);
+    }
+    if (step.family_key !== undefined && !KEBAB.test(step.family_key)) {
+      fail(`${stepLabel}.family_key is invalid`);
+    }
+    if (step.skill_key !== undefined && !KEBAB.test(step.skill_key)) {
+      fail(`${stepLabel}.skill_key is invalid`);
+    }
+    if (step.education_level !== undefined && typeof step.education_level !== "string") {
+      fail(`${stepLabel}.education_level must be a string`);
+    }
+  }
+}
+
+function checkSkill(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "") || !item.seed_key.startsWith("skill:")) {
+    fail(`${label}.seed_key must be skill:<body>`);
+  }
+  if (!KEBAB.test(item.key || "")) fail(`${label}.key is invalid`);
+  if (typeof item.label !== "string" || item.label.length < 1 || item.label.length > 120) {
+    fail(`${label}.label is invalid`);
+  }
+  if (typeof item.category !== "string" || item.category.length < 1 || item.category.length > 60) {
+    fail(`${label}.category is invalid`);
+  }
+  if (item.description !== undefined && typeof item.description !== "string") {
+    fail(`${label}.description must be a string`);
+  }
+  if (item.parent_key !== undefined && item.parent_key !== null && !KEBAB.test(item.parent_key)) {
+    fail(`${label}.parent_key is invalid`);
+  }
+}
+
+function checkInterestTag(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (!SEED_KEY.test(item.seed_key || "") || !item.seed_key.startsWith("interest:")) {
+    fail(`${label}.seed_key must be interest:<body>`);
+  }
+  if (!KEBAB.test(item.key || "")) fail(`${label}.key is invalid`);
+  if (typeof item.label !== "string" || item.label.length < 1 || item.label.length > 120) {
+    fail(`${label}.label is invalid`);
+  }
+  if (typeof item.category !== "string" || item.category.length < 1 || item.category.length > 60) {
+    fail(`${label}.category is invalid`);
+  }
+  if (item.kind !== undefined && !INTEREST_KINDS.has(item.kind)) {
+    fail(`${label}.kind is invalid`);
+  }
 }
 
 function checkEndpoint(item, label) {
@@ -366,6 +546,25 @@ for (const pack of index?.packs ?? []) {
     }
     if (meta.format === "endpoint_descriptors") {
       envelope.items.forEach((item, index) => checkEndpoint(item, `${itemLabel} item ${index}`));
+    }
+    if (meta.format === "job_families") {
+      envelope.items.forEach((item, index) => checkJobFamily(item, `${itemLabel} item ${index}`));
+    }
+    if (meta.format === "job_types") {
+      if (meta.format_version !== 2) fail(`${itemLabel}: job_types must use format_version 2`);
+      envelope.items.forEach((item, index) => checkJobType(item, `${itemLabel} item ${index}`));
+    }
+    if (meta.format === "job_relations") {
+      envelope.items.forEach((item, index) => checkJobRelation(item, `${itemLabel} item ${index}`));
+    }
+    if (meta.format === "career_paths") {
+      envelope.items.forEach((item, index) => checkCareerPath(item, `${itemLabel} item ${index}`));
+    }
+    if (meta.format === "skills") {
+      envelope.items.forEach((item, index) => checkSkill(item, `${itemLabel} item ${index}`));
+    }
+    if (meta.format === "interest_tags") {
+      envelope.items.forEach((item, index) => checkInterestTag(item, `${itemLabel} item ${index}`));
     }
   }
 

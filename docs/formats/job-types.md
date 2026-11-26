@@ -1,41 +1,49 @@
-# Format: `job_types` (v1, planned — Plan 219)
+# Format: `job_types` (v2)
 
-One item = one occupation archetype. The app stages these into the existing job-type proposal/approval law; it never writes the catalog directly.
+One item = one occupation in the curated job catalog. A trusted catalog pack
+(`official`/`operator`) is applied directly after exact-digest approval; the
+row's stored `seed_key` is its identity and `code` is an attribute.
 
 ```json
 {
   "metadata": {
     "item_type": "job_types",
     "format": "job_types",
-    "format_version": 1,
-    "dataset_vintage": "2026-11-24",
+    "format_version": 2,
+    "dataset_vintage": "2026-11-26",
     "license": "CC-BY-4.0"
   },
   "items": [
     {
       "seed_key": "job-type:data-analyst",
-      "code": "DATA_ANALYST",
+      "code": "data-analyst",
       "title": "Data Analyst",
       "family_key": "data",
       "summary": "Turns data into decisions.",
-      "skills": [
-        { "skill_key": "sql", "importance": "core", "level": 3 },
-        { "skill_key": "python", "importance": "core", "level": 2 }
-      ],
-      "related": [
-        { "seed_key": "job-type:bi-analyst", "relation": "similar_to", "weight": 0.7 }
-      ]
+      "attributes": { "experience_typical_years": [0, 3], "demand": "high" },
+      "skills": [{ "skill_key": "sql", "required_level": 5, "importance": "important" }],
+      "interests": ["science-physics"]
     }
   ]
 }
 ```
 
-Rules (detailed in Plan 219):
+## Fields
 
-- `seed_key` is identity; `code` is an attribute and may change.
-- `family_key`/`skill_key` references resolve against the existing taxonomy; unresolved references are deferred, never invented.
-- Duplicate `code`/`title_key` follows the existing job-proposal rules (map-existing first, duplicates blocked).
-- The pack applies into a **proposal batch**; an admin approves before the catalog changes.
-- Caps: ≤ 500 job types/pack; ≤ 40 skills per type; ≤ 20 related edges.
+| Field | Required | Notes |
+|---|---|---|
+| `seed_key` | yes | `job-type:<body>`; immutable identity |
+| `code` | yes | kebab-case attribute; a correction updates it without changing the identity |
+| `title` | yes | 1–160 chars; normalized-title duplicates are refused at plan time |
+| `family_key` | yes | must resolve to a `job_families` item (same pack or applied catalog) |
+| `summary` | no | 1–500 chars, display copy |
+| `attributes` | yes | object; carries `experience_typical_years`, subjects, work style, education, physical, salary, demand, environments and the typical positives/negatives |
+| `skills` | no | ≤ 40 `{skill_key, required_level?: 1..10, importance?: core\|important\|bonus}`; defaults 5/`important` |
+| `interests` | no | ≤ 40 interest-tag keys (the `interest:` seed-key bodies) |
 
-Status: planned. The repo can store this format now; the app shows “unsupported format” until Plan 219.
+## Rules
+
+- `related[]` is **gone**; typed edges live in `job_relations` v1.
+- Unresolved family/skill/interest references fail the apply (`CATALOG_REF_UNRESOLVED`); nothing is invented.
+- A row absent from a newer version retires (`status='retired'`) and reappears restored if re-added; UUIDs never change.
+- Caps: ≤ 2,000 job types per file; the shared envelope caps the file at 5 MB.
