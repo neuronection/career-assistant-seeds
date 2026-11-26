@@ -10,6 +10,7 @@ The **packs** are data only. The repository also carries the validator, CI and d
 |---|---|---|---|---|---|---|
 | `neuronection-greece-ats` | 1.2.0 | Greece (`GR`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-23 | 17 tenants + 8 endpoint descriptors |
 | `neuronection-remote-boards` | 1.0.1 | Worldwide (`WW`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-24 | 3 remote boards + 3 endpoint descriptors |
+| `neuronection-job-catalog` | 1.0.0 | Global | `job_families` v1, `job_types` v2, `job_relations` v1, `career_paths` v1, `skills` v1, `interest_tags` v1 | CC-BY-4.0 | 2026-11-26 | 19 families, 45 jobs, 40 relations, 8 paths, 32 skills, 46 interests |
 
 The pack lives at `packs/neuronection/greece-ats/`; the root index is `seed-repo.json`.
 
@@ -18,7 +19,7 @@ The pack lives at `packs/neuronection/greece-ats/`; the root index is `seed-repo
 1. **Settings → Tools → Sources → Add provider → Git repository**.
 2. Repository URL: this repository.
 3. Ref: a release tag (not `main`).
-4. Subpath: `packs/neuronection/greece-ats` or `packs/neuronection/remote-boards` (or use the index to pick a pack).
+4. Subpath: `packs/neuronection/greece-ats`, `packs/neuronection/remote-boards` or `packs/neuronection/job-catalog` (or use the index to pick a pack).
 5. Review the pending version diff and **approve the exact digest**.
 
 The official provider tile may also be boot-provisioned by the app; the repository is the source of truth, and the website is a legacy mirror.
