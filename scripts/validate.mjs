@@ -480,6 +480,7 @@ for (const pack of index?.packs ?? []) {
   }
 
   const itemTypes = new Set();
+  const catalog = { families: [], jobs: [], relations: [], paths: [], skills: [], interests: [] };
   for (const entry of manifest.item_files) {
     const itemLabel = `${label} ${entry?.path ?? "?"}`;
     if (!isObject(entry) || typeof entry.path !== "string") {
@@ -549,22 +550,28 @@ for (const pack of index?.packs ?? []) {
     }
     if (meta.format === "job_families") {
       envelope.items.forEach((item, index) => checkJobFamily(item, `${itemLabel} item ${index}`));
+      catalog.families.push(...envelope.items);
     }
     if (meta.format === "job_types") {
       if (meta.format_version !== 2) fail(`${itemLabel}: job_types must use format_version 2`);
       envelope.items.forEach((item, index) => checkJobType(item, `${itemLabel} item ${index}`));
+      catalog.jobs.push(...envelope.items);
     }
     if (meta.format === "job_relations") {
       envelope.items.forEach((item, index) => checkJobRelation(item, `${itemLabel} item ${index}`));
+      catalog.relations.push(...envelope.items);
     }
     if (meta.format === "career_paths") {
       envelope.items.forEach((item, index) => checkCareerPath(item, `${itemLabel} item ${index}`));
+      catalog.paths.push(...envelope.items);
     }
     if (meta.format === "skills") {
       envelope.items.forEach((item, index) => checkSkill(item, `${itemLabel} item ${index}`));
+      catalog.skills.push(...envelope.items);
     }
     if (meta.format === "interest_tags") {
       envelope.items.forEach((item, index) => checkInterestTag(item, `${itemLabel} item ${index}`));
+      catalog.interests.push(...envelope.items);
     }
   }
 
@@ -576,9 +583,77 @@ for (const pack of index?.packs ?? []) {
     if (!itemTypes.has(type)) fail(`${label}: index itemTypes lists ${type} but no item file has it`);
   }
 
+  checkCatalogReferences(catalog, label);
+
   const computed = packDigest(manifest, manifest.item_files, pack.path);
   if (computed !== pack.digest) {
     fail(`${label}: digest mismatch (index ${pack.digest}, computed ${computed})`);
+  }
+}
+
+function checkCatalogReferences(catalog, label) {
+  // Cross-item checks inside one catalog pack. Unresolved references are
+  // warnings: a pack may legally build on taxonomy from another applied pack.
+  const seen = (items, keyOf, what) => {
+    const keys = new Set();
+    for (const item of items) {
+      const key = keyOf(item);
+      if (keys.has(key)) fail(`${label}: duplicate ${what} ${key}`);
+      keys.add(key);
+    }
+    return keys;
+  };
+  const jobCodes = seen(catalog.jobs, (item) => item.code, "job code");
+  const familyKeys = seen(catalog.families, (item) => item.key, "family key");
+  const skillKeys = seen(catalog.skills, (item) => item.key, "skill key");
+  const interestKeys = seen(catalog.interests, (item) => item.key, "interest key");
+
+  for (const job of catalog.jobs) {
+    if (catalog.families.length > 0 && !familyKeys.has(job.family_key)) {
+      warn(`${label}: job ${job.code} family ${job.family_key} is not in this pack`);
+    }
+    for (const ref of job.skills || []) {
+      if (catalog.skills.length > 0 && !skillKeys.has(ref.skill_key)) {
+        warn(`${label}: job ${job.code} skill ${ref.skill_key} is not in this pack`);
+      }
+    }
+    for (const key of job.interests || []) {
+      if (catalog.interests.length > 0 && !interestKeys.has(key)) {
+        warn(`${label}: job ${job.code} interest ${key} is not in this pack`);
+      }
+    }
+  }
+
+  const triples = new Set();
+  const connected = new Set();
+  for (const rel of catalog.relations) {
+    if (rel.from === rel.to) fail(`${label}: relation ${rel.seed_key} is a self-loop`);
+    const triple = `${rel.from}/${rel.to}/${rel.type}`;
+    if (triples.has(triple)) fail(`${label}: duplicate relation ${triple}`);
+    triples.add(triple);
+    connected.add(rel.from).add(rel.to);
+    if (catalog.jobs.length > 0 && (!jobCodes.has(rel.from) || !jobCodes.has(rel.to))) {
+      warn(`${label}: relation ${triple} points outside this pack`);
+    }
+  }
+  if (catalog.relations.length > 0) {
+    for (const job of catalog.jobs) {
+      if (!connected.has(job.code)) warn(`${label}: job ${job.code} has no relation`);
+    }
+  }
+
+  for (const path of catalog.paths) {
+    if (catalog.jobs.length > 0 && !jobCodes.has(path.job)) {
+      warn(`${label}: path ${path.seed_key} job ${path.job} is not in this pack`);
+    }
+    for (const step of path.steps || []) {
+      if (step.skill_key && catalog.skills.length > 0 && !skillKeys.has(step.skill_key)) {
+        warn(`${label}: path ${path.seed_key} skill ${step.skill_key} is not in this pack`);
+      }
+      if (step.family_key && catalog.families.length > 0 && !familyKeys.has(step.family_key)) {
+        warn(`${label}: path ${path.seed_key} family ${step.family_key} is not in this pack`);
+      }
+    }
   }
 }
 
