@@ -11,6 +11,7 @@ The **packs** are data only. The repository also carries the validator, CI and d
 | `neuronection-greece-ats` | 1.2.0 | Greece (`GR`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-23 | 17 tenants + 8 endpoint descriptors |
 | `neuronection-remote-boards` | 1.0.1 | Worldwide (`WW`) | `ats_presets` v1, `endpoint_descriptors` v1 | CC-BY-4.0 | 2026-11-24 | 3 remote boards + 3 endpoint descriptors |
 | `neuronection-job-catalog` | 1.0.0 | Global | `job_families` v1, `job_types` v2, `job_relations` v1, `career_paths` v1, `skills` v1, `interest_tags` v1 | CC-BY-4.0 | 2026-11-26 | 19 families, 45 jobs, 40 relations, 8 paths, 32 skills, 46 interests |
+| `neuronection-reference-banks` | 1.0.0 | Global | `assessment_questions` v1, `assessment_templates` v1, `cv_templates` v1, `metric_dimensions` v1, `metric_category_anchors` v1, `skill_packs` v1 | CC-BY-4.0 | 2026-11-28 | 8 questions, 2 batteries, 10 CV layouts, 19 dimensions, 14 anchors, 3 skill packs |
 
 The pack lives at `packs/neuronection/greece-ats/`; the root index is `seed-repo.json`.
 
@@ -19,7 +20,7 @@ The pack lives at `packs/neuronection/greece-ats/`; the root index is `seed-repo
 1. **Settings → Tools → Sources → Add provider → Git repository**.
 2. Repository URL: this repository.
 3. Ref: a release tag (not `main`).
-4. Subpath: `packs/neuronection/greece-ats`, `packs/neuronection/remote-boards` or `packs/neuronection/job-catalog` (or use the index to pick a pack).
+4. Subpath: `packs/neuronection/greece-ats`, `packs/neuronection/remote-boards`, `packs/neuronection/job-catalog` or `packs/neuronection/reference-banks` (or use the index to pick a pack).
 5. Review the pending version diff and **approve the exact digest**.
 
 The official provider tile may also be boot-provisioned by the app; the repository is the source of truth, and the website is a legacy mirror.
@@ -43,6 +44,9 @@ The layout is versioned on three axes — repo `schemaVersion`, pack `schema_ver
 |---|---|
 | `ats_presets` | v1 — both packs |
 | `endpoint_descriptors` | v1 — both packs |
+| `interest_tags` | v1 — job-catalog pack |
+| `assessment_questions`, `assessment_templates`, `cv_templates` | v1 — reference-banks pack |
+| `metric_dimensions`, `metric_category_anchors`, `skill_packs` | v1 — reference-banks pack |
 | `job_types`, `companies` | planned — Plan 219 |
 | `roadmap_graph`, `roadmap_content`, `external_reference` | planned — Plan 223 |
 | `posting_snapshot` | planned — future; same posting identity as live sync |

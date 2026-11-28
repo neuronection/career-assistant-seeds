@@ -37,6 +37,12 @@ The layout is deliberately three-level versioned so future formats do not force 
 │       ├── ats-presets.md
 │       ├── endpoint-descriptors.md
 │       ├── job-types.md
+│       ├── assessment-questions.md
+│       ├── assessment-templates.md
+│       ├── cv-templates.md
+│       ├── metric-dimensions.md
+│       ├── metric-category-anchors.md
+│       ├── skill-packs.md
 │       ├── companies.md
 │       ├── roadmap-graph.md
 │       ├── roadmap-content.md
