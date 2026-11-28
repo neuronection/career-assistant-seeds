@@ -34,6 +34,12 @@ const FORMATS = new Set([
   "career_paths",
   "skills",
   "interest_tags",
+  "assessment_questions",
+  "assessment_templates",
+  "cv_templates",
+  "metric_dimensions",
+  "metric_category_anchors",
+  "skill_packs",
   "companies",
   "roadmap_graph",
   "roadmap_content",
@@ -49,6 +55,77 @@ const RELATION_TYPES = new Set([
 const IMPORTANCE = new Set(["core", "important", "bonus"]);
 const STEP_KINDS = new Set(["education", "experience", "certification", "job"]);
 const INTEREST_KINDS = new Set(["topic", "industry"]);
+const QUESTION_KINDS = new Set(["scenario_mcq", "time_allocation", "ranking", "slider"]);
+const METRIC_GROUPS = new Set(["interest", "value", "workstyle", "constraint", "aptitude"]);
+const RIASEC_LETTERS = new Set([
+  "realistic",
+  "investigative",
+  "artistic",
+  "social",
+  "enterprising",
+  "conventional"
+]);
+const SKILL_PACK_TASKS = new Set([
+  "assessment_generate",
+  "template_design",
+  "profile_analyze",
+  "job_generate",
+  "relation_suggest",
+  "match_score",
+  "university_parse",
+  "chat",
+  "chat_ops",
+  "assist",
+  "path_suggest",
+  "posting_map",
+  "job_type_proposal",
+  "posting_extract",
+  "posting_skill_resolve",
+  "detail_triage",
+  "company_triage",
+  "target_resolve",
+  "transcribe",
+  "cv_ocr",
+  "cv_parse",
+  "cv_template_design",
+  "cv_template_review",
+  "cv_template_pick",
+  "cv_build_review",
+  "cv_suggest",
+  "cv_cover_letter",
+  "cv_builder_chat",
+  "cv_draft",
+  "cv_synth",
+  "catalog_enrich",
+  "chat_title",
+  "autopilot_run",
+  "interview_plan",
+  "interview_turn",
+  "interview_debrief",
+  "embed",
+  "mcp_tool_call",
+  "query_curator",
+  "sandbox_capability_call",
+  "tool_run",
+  "translate",
+  "path_draft",
+  "skill_relation_suggest",
+  "smart_search",
+  "decision",
+  "decision_tool_dispatch",
+  "decision_boolean_gate",
+  "decision_choice",
+  "decision_score"
+]);
+const DIMENSION_KEY = /^[a-z0-9][a-z0-9._-]{0,59}$/;
+const BANK_CAPS = {
+  assessment_questions: 50,
+  assessment_templates: 20,
+  cv_templates: 50,
+  metric_dimensions: 200,
+  metric_category_anchors: 200,
+  skill_packs: 50
+};
 const ALLOWED_PACK_FILES = new Set(["manifest.json", "README.md", "LICENSE", "CHANGELOG.md"]);
 
 const readText = (path) => readFileSync(join(ROOT, path), "utf8");
@@ -328,6 +405,221 @@ function checkInterestTag(item, label) {
   }
 }
 
+function checkVersionedSeedKey(item, label, prefix, keyPattern = KEBAB) {
+  if (!isObject(item)) return;
+  if (!Number.isInteger(item.version) || item.version < 1) {
+    fail(`${label}.version must be a positive integer`);
+    return;
+  }
+  if (typeof item.key !== "string" || !keyPattern.test(item.key)) {
+    fail(`${label}.key is invalid`);
+    return;
+  }
+  const expected = `${prefix}:${item.key}/v${item.version}`;
+  if (!SEED_KEY.test(item.seed_key || "") || item.seed_key !== expected) {
+    fail(`${label}.seed_key must be ${expected}`);
+  }
+}
+
+function checkAssessmentQuestion(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (
+    !SEED_KEY.test(item.seed_key || "") ||
+    !item.seed_key.startsWith("assessment-question:")
+  ) {
+    fail(`${label}.seed_key must be assessment-question:<key>`);
+  }
+  if (typeof item.prompt !== "string" || item.prompt.length < 1 || item.prompt.length > 2000) {
+    fail(`${label}.prompt is invalid`);
+  }
+  if (item.help !== undefined && (typeof item.help !== "string" || item.help.length > 2000)) {
+    fail(`${label}.help is invalid`);
+  }
+  if (!Number.isInteger(item.phase) || item.phase < 1 || item.phase > 10) {
+    fail(`${label}.phase must be 1..10`);
+  }
+  if (!QUESTION_KINDS.has(item.kind)) fail(`${label}.kind is invalid`);
+  if (!Array.isArray(item.options) || item.options.length > 12) {
+    fail(`${label}.options must be an array of at most 12`);
+  } else {
+    const ids = new Set();
+    for (const [index, option] of item.options.entries()) {
+      const optionLabel = `${label}.options[${index}]`;
+      if (!isObject(option)) {
+        fail(`${optionLabel} must be an object`);
+        continue;
+      }
+      if (typeof option.id !== "string" || option.id.length < 1 || option.id.length > 60) {
+        fail(`${optionLabel}.id is invalid`);
+      } else if (ids.has(option.id)) {
+        fail(`${optionLabel}.id is duplicated`);
+      } else {
+        ids.add(option.id);
+      }
+      if (
+        typeof option.label !== "string" ||
+        option.label.length < 1 ||
+        option.label.length > 300
+      ) {
+        fail(`${optionLabel}.label is invalid`);
+      }
+      if (option.detail !== undefined && typeof option.detail !== "string") {
+        fail(`${optionLabel}.detail must be a string`);
+      }
+      if (option.scores !== undefined && !isObject(option.scores)) {
+        fail(`${optionLabel}.scores must be an object`);
+      } else if (option.scores && Array.isArray(option.scores.interest_keys)) {
+        if (option.scores.interest_keys.length > 10) {
+          fail(`${optionLabel}.scores.interest_keys must have at most 10 keys`);
+        }
+        for (const key of option.scores.interest_keys) {
+          if (typeof key !== "string" || !KEBAB.test(key)) {
+            fail(`${optionLabel}.scores.interest_keys has an invalid key`);
+          }
+        }
+      }
+    }
+  }
+  if (item.sort_index !== undefined && (!Number.isInteger(item.sort_index) || item.sort_index < 0)) {
+    fail(`${label}.sort_index must be an integer >= 0`);
+  }
+  if (item.audience_stages !== undefined) {
+    checkStringArray(item.audience_stages, null, 10, `${label}.audience_stages`, { min: 0 });
+  }
+  if (item.time_split !== undefined && item.time_split !== null && !isObject(item.time_split)) {
+    fail(`${label}.time_split must be an object or null`);
+  }
+}
+
+function checkAssessmentTemplate(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  checkVersionedSeedKey(item, label, "assessment-template");
+  if (typeof item.title !== "string" || item.title.length < 1 || item.title.length > 200) {
+    fail(`${label}.title is invalid`);
+  }
+  if (item.description !== undefined && typeof item.description !== "string") {
+    fail(`${label}.description must be a string`);
+  }
+  if (item.audience_stages !== undefined) {
+    checkStringArray(item.audience_stages, null, 10, `${label}.audience_stages`, { min: 0 });
+  }
+  if (item.language !== undefined && !LANGUAGE.test(item.language)) {
+    fail(`${label}.language must be a two-letter code`);
+  }
+  if (
+    item.schema_version !== undefined &&
+    (!Number.isInteger(item.schema_version) || item.schema_version < 1 || item.schema_version > 99)
+  ) {
+    fail(`${label}.schema_version must be 1..99`);
+  }
+  if (!isObject(item.content)) fail(`${label}.content must be an object`);
+  if (isObject(item.content) && !Array.isArray(item.content.phases)) {
+    fail(`${label}.content.phases must be an array`);
+  }
+}
+
+function checkCvTemplate(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  checkVersionedSeedKey(item, label, "cv-template");
+  if (typeof item.title !== "string" || item.title.length < 1 || item.title.length > 200) {
+    fail(`${label}.title is invalid`);
+  }
+  if (item.description !== undefined && typeof item.description !== "string") {
+    fail(`${label}.description must be a string`);
+  }
+  if (item.language !== undefined && !LANGUAGE.test(item.language)) {
+    fail(`${label}.language must be a two-letter code`);
+  }
+  if (item.page_size !== undefined && !["a4", "letter"].includes(item.page_size)) {
+    fail(`${label}.page_size must be a4 or letter`);
+  }
+  if (item.ats_safe !== undefined && typeof item.ats_safe !== "boolean") {
+    fail(`${label}.ats_safe must be a boolean`);
+  }
+  if (!isObject(item.content)) fail(`${label}.content must be an object`);
+  if (isObject(item.content) && !Array.isArray(item.content.blocks)) {
+    fail(`${label}.content.blocks must be an array`);
+  }
+}
+
+function checkMetricDimension(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (typeof item.key !== "string" || !DIMENSION_KEY.test(item.key)) {
+    fail(`${label}.key is invalid`);
+  } else if (item.seed_key !== `metric-dimension:${item.key}`) {
+    fail(`${label}.seed_key must be metric-dimension:${item.key}`);
+  }
+  if (typeof item.label !== "string" || item.label.length < 1 || item.label.length > 80) {
+    fail(`${label}.label is invalid`);
+  }
+  if (!METRIC_GROUPS.has(item.group)) fail(`${label}.group is invalid`);
+  if (item.description !== undefined && typeof item.description !== "string") {
+    fail(`${label}.description must be a string`);
+  }
+  if (item.scale !== undefined && !["scalar", "vector"].includes(item.scale)) {
+    fail(`${label}.scale must be scalar or vector`);
+  }
+  if (item.reverse_score !== undefined && typeof item.reverse_score !== "boolean") {
+    fail(`${label}.reverse_score must be a boolean`);
+  }
+  if (item.sources !== undefined) {
+    checkStringArray(item.sources, null, 20, `${label}.sources`, { min: 0 });
+  }
+  if (item.consumers !== undefined) {
+    checkStringArray(item.consumers, null, 20, `${label}.consumers`, { min: 0 });
+  }
+}
+
+function checkMetricCategoryAnchor(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  if (
+    typeof item.category !== "string" ||
+    item.category.length < 1 ||
+    item.category.length > 60
+  ) {
+    fail(`${label}.category is invalid`);
+  } else if (item.seed_key !== `interest-category:${item.category}`) {
+    fail(`${label}.seed_key must be interest-category:${item.category}`);
+  }
+  if (!RIASEC_LETTERS.has(item.letter)) {
+    fail(`${label}.letter must be a Holland code`);
+  }
+}
+
+function checkSkillPack(item, label) {
+  if (!isObject(item)) {
+    fail(`${label} must be an object`);
+    return;
+  }
+  checkVersionedSeedKey(item, label, "skill-pack");
+  if (typeof item.title !== "string" || item.title.length < 1 || item.title.length > 200) {
+    fail(`${label}.title is invalid`);
+  }
+  if (!SKILL_PACK_TASKS.has(item.task)) fail(`${label}.task is invalid`);
+  if (
+    typeof item.instructions !== "string" ||
+    item.instructions.length < 1 ||
+    item.instructions.length > 20000
+  ) {
+    fail(`${label}.instructions must be 1..20000 chars`);
+  }
+}
+
 function checkEndpoint(item, label) {
   if (!isObject(item)) {
     fail(`${label} must be an object`);
@@ -481,6 +773,15 @@ for (const pack of index?.packs ?? []) {
 
   const itemTypes = new Set();
   const catalog = { families: [], jobs: [], relations: [], paths: [], skills: [], interests: [] };
+  const banks = {
+    questions: [],
+    templates: [],
+    cvTemplates: [],
+    dimensions: [],
+    anchors: [],
+    skillPacks: []
+  };
+  const seedKeys = new Set();
   for (const entry of manifest.item_files) {
     const itemLabel = `${label} ${entry?.path ?? "?"}`;
     if (!isObject(entry) || typeof entry.path !== "string") {
@@ -542,6 +843,16 @@ for (const pack of index?.packs ?? []) {
     }
     itemTypes.add(meta.item_type);
 
+    if (BANK_CAPS[meta.format] !== undefined && envelope.items.length > BANK_CAPS[meta.format]) {
+      fail(`${itemLabel}: at most ${BANK_CAPS[meta.format]} ${meta.format} items per file`);
+    }
+    for (const item of envelope.items) {
+      if (isObject(item) && typeof item.seed_key === "string") {
+        if (seedKeys.has(item.seed_key)) fail(`${itemLabel}: duplicate seed_key ${item.seed_key}`);
+        seedKeys.add(item.seed_key);
+      }
+    }
+
     if (meta.format === "ats_presets") {
       envelope.items.forEach((item, index) => checkAtsPreset(item, `${itemLabel} item ${index}`));
     }
@@ -573,6 +884,30 @@ for (const pack of index?.packs ?? []) {
       envelope.items.forEach((item, index) => checkInterestTag(item, `${itemLabel} item ${index}`));
       catalog.interests.push(...envelope.items);
     }
+    if (meta.format === "assessment_questions") {
+      envelope.items.forEach((item, index) => checkAssessmentQuestion(item, `${itemLabel} item ${index}`));
+      banks.questions.push(...envelope.items);
+    }
+    if (meta.format === "assessment_templates") {
+      envelope.items.forEach((item, index) => checkAssessmentTemplate(item, `${itemLabel} item ${index}`));
+      banks.templates.push(...envelope.items);
+    }
+    if (meta.format === "cv_templates") {
+      envelope.items.forEach((item, index) => checkCvTemplate(item, `${itemLabel} item ${index}`));
+      banks.cvTemplates.push(...envelope.items);
+    }
+    if (meta.format === "metric_dimensions") {
+      envelope.items.forEach((item, index) => checkMetricDimension(item, `${itemLabel} item ${index}`));
+      banks.dimensions.push(...envelope.items);
+    }
+    if (meta.format === "metric_category_anchors") {
+      envelope.items.forEach((item, index) => checkMetricCategoryAnchor(item, `${itemLabel} item ${index}`));
+      banks.anchors.push(...envelope.items);
+    }
+    if (meta.format === "skill_packs") {
+      envelope.items.forEach((item, index) => checkSkillPack(item, `${itemLabel} item ${index}`));
+      banks.skillPacks.push(...envelope.items);
+    }
   }
 
   const declaredTypes = new Set(Array.isArray(pack.itemTypes) ? pack.itemTypes : []);
@@ -584,10 +919,59 @@ for (const pack of index?.packs ?? []) {
   }
 
   checkCatalogReferences(catalog, label);
+  checkBankReferences(banks, label);
 
   const computed = packDigest(manifest, manifest.item_files, pack.path);
   if (computed !== pack.digest) {
     fail(`${label}: digest mismatch (index ${pack.digest}, computed ${computed})`);
+  }
+}
+
+function checkBankReferences(banks, label) {
+  // Cross-item checks inside one reference-banks pack: a versioned identity
+  // body is unique per (key, version) and the singleton banks have one row
+  // per key/letter.
+  const versionBodies = new Set();
+  const versioned = [
+    ["assessment template", banks.templates],
+    ["CV template", banks.cvTemplates],
+    ["skill pack", banks.skillPacks]
+  ];
+  for (const [what, items] of versioned) {
+    const versions = new Map();
+    for (const item of items) {
+      if (!isObject(item) || typeof item.key !== "string") continue;
+      const body = `${item.key}/v${item.version}`;
+      if (versionBodies.has(`${what}:${body}`)) {
+        fail(`${label}: duplicate ${what} version ${body}`);
+      }
+      versionBodies.add(`${what}:${body}`);
+      const seen = versions.get(item.key) ?? new Set();
+      if (seen.has(item.version)) fail(`${label}: duplicate ${what} ${body}`);
+      seen.add(item.version);
+      versions.set(item.key, seen);
+    }
+  }
+
+  const dimensionKeys = new Set();
+  for (const item of banks.dimensions) {
+    if (!isObject(item) || typeof item.key !== "string") continue;
+    if (dimensionKeys.has(item.key)) fail(`${label}: duplicate metric dimension ${item.key}`);
+    dimensionKeys.add(item.key);
+  }
+
+  const categories = new Set();
+  for (const item of banks.anchors) {
+    if (!isObject(item) || typeof item.category !== "string") continue;
+    if (categories.has(item.category)) fail(`${label}: duplicate interest category ${item.category}`);
+    categories.add(item.category);
+  }
+
+  const prompts = new Set();
+  for (const item of banks.questions) {
+    if (!isObject(item) || typeof item.prompt !== "string") continue;
+    if (prompts.has(item.prompt)) fail(`${label}: duplicate assessment question prompt`);
+    prompts.add(item.prompt);
   }
 }
 
